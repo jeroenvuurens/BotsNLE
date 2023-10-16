@@ -1,0 +1,45 @@
+
+# script to install a basic environment on a fresh raspi
+# recommended is to use the headless 64-bit Debian OS
+
+sudo apt -y update
+sudo apt -y upgrade
+
+# Important! Do not use anaconda if you want to use picamera2
+
+# for those who use the VIM editor and hate vi keysettings
+# if you do not like VIM/VI, just use nano
+echo <<-EOF >>~/.vimrc
+set nocp
+set backspace=indent,eol,start
+EOF
+
+pip install jupyterlab scikit-learn pandas numpy matplotlib ipywidgets python3-opencv
+
+# Setup a service so that jupyter will (re)start automatically
+mkdir ~/notebooks
+NOTEBOOKPATH=`readlink -f ~/notebooks`
+
+JUPYTERLABPATH=`which jupyter-lab`
+sudo bash -c "cat >/etc/systemd/system/jupyter.service" <<-EOV
+[Unit]
+Description=Jupyter Lab
+
+[Service]
+Type=simple
+PIDFile=/run/jupyter.pid
+ExecStart=/bin/bash -c "$JUPYTERLABPATH --ip="0.0.0.0" --no-browser --notebook-dir=$NOTEBOOKPATH"
+User=$USER
+Group=$USER
+WorkingDirectory=$NOTEBOOKPATH
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOV
+
+sudo systemctl enable jupyter.service
+sudo systemctl daemon-reload
+
+sudo systemctl start jupyter.service
