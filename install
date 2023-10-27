@@ -1,22 +1,26 @@
-
-# script to install a basic environment on a fresh raspi
-# recommended is to use the headless 64-bit Debian OS
-
 sudo apt -y update
 sudo apt -y upgrade
+sudo apt-get install python3-pip libjpeg-dev libopenblas-dev libopenmpi-dev libomp-dev
+sudo apt-get install git
 
-# Important! Do not use anaconda if you want to use picamera2
+echo <<-EOF >>.bashrc
+export PATH="/home/nle/.local/bin:\$PATH"
+EOF
 
-# for those who use the VIM editor and hate vi keysettings
-# if you do not like VIM/VI, just use nano
-echo <<-EOF >>~/.vimrc
+echo <<-EOF >.vimrc
 set nocp
 set backspace=indent,eol,start
 EOF
 
-pip install jupyterlab scikit-learn pandas numpy matplotlib ipywidgets python3-opencv
+pip install setuptools==58.3.0
+pip install Cython
 
-# Setup a service so that jupyter will (re)start automatically
+pip install torch torchvision
+pip install opencv-python
+pip install numpy --upgrade
+
+pip install jupyterlab scikit-learn pandas matplotlib ipywidgets
+
 mkdir ~/notebooks
 NOTEBOOKPATH=`readlink -f ~/notebooks`
 
@@ -28,7 +32,7 @@ Description=Jupyter Lab
 [Service]
 Type=simple
 PIDFile=/run/jupyter.pid
-ExecStart=/bin/bash -c "$JUPYTERLABPATH --ip="0.0.0.0" --no-browser --notebook-dir=$NOTEBOOKPATH"
+ExecStart=/bin/bash -c "$JUPYTERLABPATH --ip="0.0.0.0" --no-browser --notebook-dir=$NOTEBOOKPATH --NotebookApp.token=nle23"
 User=$USER
 Group=$USER
 WorkingDirectory=$NOTEBOOKPATH
@@ -43,3 +47,5 @@ sudo systemctl enable jupyter.service
 sudo systemctl daemon-reload
 
 sudo systemctl start jupyter.service
+
+
