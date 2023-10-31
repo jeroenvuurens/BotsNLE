@@ -11,6 +11,7 @@ echo <<-EOF >.vimrc
 set nocp
 set backspace=indent,eol,start
 EOF
+sudo cp .vimrc /root/.vimrc
 
 pip install setuptools==58.3.0
 pip install Cython
@@ -20,6 +21,7 @@ pip install opencv-python
 pip install numpy --upgrade
 
 pip install jupyterlab scikit-learn pandas matplotlib ipywidgets
+pip install numba
 
 mkdir ~/notebooks
 NOTEBOOKPATH=`readlink -f ~/notebooks`

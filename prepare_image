@@ -1,6 +1,6 @@
 echo "This sets up a script that is run once on the next boot, to expand the filesystem on an SD card. This should be used right before creating a new image that can be burned on an SD card with Balena Etcher"
 
-sudo test -f /etc/rc.local -a ! -f /etc/rc.local.backup && cp /etc/rc.local /etc/rc.local.backup
+sudo bash -c "test -f /etc/rc.local -a ! -f /etc/rc.local.backup && cp /etc/rc.local /etc/rc.local.backup"
 
 sudo bash -c "cat >>/etc/rc.local" <<-EOV
 test -f /var/local/runonce.sh && /var/local/runonce.sh
@@ -15,4 +15,9 @@ grep -v \$0 /etc/rc.local >tmpfile && mv tmpfile /etc/rc.local
 rm \$0
 EOV
 sudo chmod 700 /var/local/runonce.sh
+
+rm -rf ~/.cache 2>/dev/null
+rm -rf ~/notebooks/.ipynb_checkpoints 2>/dev/null
+rm -rf ~/notebooks/angle90/.* 2>/dev/null
+rm ~/.bash_history 2>/dev/null
 
