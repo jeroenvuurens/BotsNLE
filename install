@@ -2,6 +2,7 @@ sudo apt -y update
 sudo apt -y upgrade
 sudo apt-get install python3-pip libjpeg-dev libopenblas-dev libopenmpi-dev libomp-dev
 sudo apt-get install git
+sudo apt install libcamera-apps
 
 echo <<-EOF >>.bashrc
 export PATH="/home/nle/.local/bin:\$PATH"
@@ -16,12 +17,12 @@ sudo cp .vimrc /root/.vimrc
 pip install setuptools==58.3.0
 pip install Cython
 
-pip install torch torchvision
+pip install torch==2.0.1 torchvision==0.15.2 
 pip install opencv-python
 pip install numpy --upgrade
+pip install numba
 
 pip install jupyterlab scikit-learn pandas matplotlib ipywidgets
-pip install numba
 
 mkdir ~/notebooks
 NOTEBOOKPATH=`readlink -f ~/notebooks`
@@ -50,4 +51,11 @@ sudo systemctl daemon-reload
 
 sudo systemctl start jupyter.service
 
-
+# change swapfile
+sudo dphys-swapfile swapoff
+sudo bash -c "cat /etc/dphys-swapfile | sed -e 's/CONF_SWAPSIZE.*/CONF_SWAPSIZE=2048/' >swapfile"
+sudo bash -c "cat swapfile | sed -e 's/CONF_MAXSWAP.*/CONF_MAXSWAP=2048/' >swapfile2"
+sudo mv swapfile2 /etc/dphys-swapfile
+sudo rm swapfile
+sudo dphys-swapfile setup
+sudo dphys-swapfile swapon
